@@ -1,11 +1,11 @@
-const mysql = require('mysql2');\
+const mysql = require('mysql2');
 
-const db = mysql.createConnection(
+const connection = mysql.createConnection(
     {
         host: 'localhost',
         user: 'root',
         password: 'root',
-        database: 'employees'
+        database: 'company'
     },
     console.log('Connected to the election database')
 );
@@ -14,4 +14,4 @@ connection.connect(function (err) {
     if (err) throw err;
 });
 
-module.exports = db;
+module.exports = connection;

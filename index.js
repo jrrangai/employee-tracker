@@ -1,4 +1,7 @@
 const inquirer = require('inquirer');
+const mysql = require('mysql2');
+require('console.table');
+const connection = require('./db/connection');
 
 function companyOptions() {
     inquirer
@@ -14,7 +17,8 @@ function companyOptions() {
                 'Add a department',
                 'Add a role',
                 'Add an employee',
-                'Update a current employee'
+                'Update a current employee',
+                'All done!'
             ]
         }
     ])
@@ -40,9 +44,142 @@ function companyOptions() {
                 break;
             case 'Update a current employee':
                 updateEmployee();
+                break;
+            case 'All done!':
+                process.exit();
+            
         }
     })
 }
 
-function viewDepartments()
-module.exports = db;
+// viewing
+function viewDepartments() {
+    connection.promise().query(`
+    SELECT * FROM department;
+    `)
+    .then( function([rows]){
+        console.table(rows);
+        companyOptions();
+    })
+}
+
+function viewRoles() {
+    connection.promise().query(`
+    SELECT * FROM role;
+    `)
+    .then( function([rows]){
+        console.table(rows);
+        companyOptions();
+    })
+}
+
+
+function viewEmployees() {
+    connection.promise().query(`
+    SELECT * FROM employee;
+    `)
+    .then( function([rows]){
+        console.table(rows);
+        companyOptions();
+    })
+}
+
+// Adding
+function addDepartment(){
+    inquirer
+    .prompt([
+        {
+            type: 'input',
+            name: 'name',
+            message: 'Enter a department name'
+        }
+    ])
+    .then(ans => {
+        connection.promise().query(`
+        INSERT INTO department SET ?
+        `, ans)
+        .then(()=> {
+            console.log('Department added.');
+            companyOptions();
+        })
+    });
+};
+
+function addRole(){
+    inquirer
+    .prompt([
+        {
+            type: 'input',
+            name: 'title',
+            message: "Enter a department name:"
+        },
+        {
+            type: 'number',
+            name: 'salary',
+            message: 'Enter the departments salary:'
+        },
+        {
+            type: 'number',
+            name: 'departmentId',
+            message: 'Give the department an ID:'
+        }
+    ]).then(ans =>{
+        connection.query(
+            `INSERT INTO role SET ?`,
+            {
+                title: ans.title,
+                salary: ans.salary,
+                department_id: ans.departmentId
+            }
+        ).then(() => {
+            console.log('Role added to company!');
+            companyOptions();
+        })
+    })
+}
+
+// Updating
+function updateEmployee(){
+    connection.promise().query(
+        `SELECT * FROM employee`
+    ).then(function([rows]) {
+        let employees = rows.map(employee => {
+            return { value: employee.id, name: employee.first_name + " " + employee.last_name }
+        })
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'employeeId',
+                message: 'Choose employee to update:',
+                choices: employees
+            }
+        ])
+        .then(ans =>{
+            let employee = ans.employeeId;
+            connection.promise().query(
+                `SELECT * FROM role`
+            ).then(function([rows]) {
+                let roles = rows.map(role => {
+                    return { value: role.id, name: role.title }
+                })
+                inquirer.prompt([
+                    {
+                        type: 'list',
+                        name: 'roleId',
+                        message: 'What role does this employee now have:',
+                        choices: roles
+                    }
+                ]).then( ans => {console.log(ans); console.log(employee)
+                connection.promise().query(
+                    `UPDATE employee SET role_id = ? WHERE id = ?`, [ans.roleId, employee]
+                ).then( function(){
+                    console.log('Employee has been updated');
+                    companyOptions();
+                })
+                })
+            })
+        })
+    })
+}
+
+companyOptions();
