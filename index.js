@@ -124,7 +124,7 @@ function addRole(){
             message: 'Give the department an ID:'
         }
     ]).then(ans =>{
-        connection.query(
+        connection.promise().query(
             `INSERT INTO role SET ?`,
             {
                 title: ans.title,
@@ -135,6 +135,44 @@ function addRole(){
             console.log('Role added to company!');
             companyOptions();
         })
+    })
+}
+
+function addEmployee() {
+    connection.promise().query(
+        `SELECT * FROM role`
+    ).then(function([rows]) {
+        let roles = rows.map(role => {
+            return { value: role.id, name: role.title}
+        })
+        inquirer
+        .prompt([
+        {
+            type: 'input',
+            name: 'firstName',
+            message: 'Enter new employees first name:'
+        },
+        {
+            type: 'input',
+            name: 'lastName',
+            message: 'Enter new employees last name:'
+        },
+        {
+            type: 'list',
+            name: 'roleId',
+            message: 'Which role does this employee have in the company:',
+            choices: roles
+        }
+        ]).then(ans => {
+            connection.promise().query(
+                `INSERT INTO employee SET ?`,
+                {
+                    first_name: ans.firstName,
+                    last_name: ans.lastName,
+                    role_id: ans.roleId
+                }
+            )
+        }).then()
     })
 }
 
