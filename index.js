@@ -172,7 +172,7 @@ function addEmployee() {
                     role_id: ans.roleId
                 }
             )
-        }).then()
+        })
     })
 }
 
