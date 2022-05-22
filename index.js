@@ -172,6 +172,11 @@ function addEmployee() {
                     role_id: ans.roleId
                 }
             )
+        }).then(ans => {
+            let manager = 
+            connection.promise().query(
+                `SELECT * FROM employee WHERE manger_id = NULL`
+            )
         })
     })
 }
