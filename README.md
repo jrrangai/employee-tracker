@@ -21,3 +21,7 @@
 <li> WHEN I choose to update an employee role
 <li> THEN I am prompted to select an employee to update and their new role and this information is updated in the database
    </ul></details>
+
+Video to see how the application works:
+https://drive.google.com/file/d/1AGpgI3NVV0ztjI6sB8brz3zIAjGcMevB/view
+
