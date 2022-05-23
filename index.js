@@ -173,10 +173,12 @@ function addEmployee() {
                 }
             )
         }).then(ans => {
-            let manager = 
-            connection.promise().query(
-                `SELECT * FROM employee WHERE manger_id = NULL`
-            )
+            console.log("Employee added!");
+            companyOptions();
+            // let manager
+            // connection.promise().query(
+            //     `SELECT * FROM employee WHERE manger_id = NULL`
+            // )
         })
     })
 }
